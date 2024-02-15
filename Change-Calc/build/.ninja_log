@@ -1,0 +1,19 @@
+# ninja log v5
+3	108	1707848520769959705	CMakeFiles/Change_Calc.dir/third_party/whereami.c.o	c0403412f32db7b1
+2	736	1707848521396626329	CMakeFiles/Change_Calc.dir/utility/array.cpp.o	825562d5fc5406a5
+3	1063	1707848521723292973	CMakeFiles/Change_Calc.dir/third_party/sago/platform_folders.cpp.o	1f8340d50ebe4518
+1	1257	1707848521916626293	CMakeFiles/Change_Calc.dir/main.cpp.o	ac55a3bb786f2dfd
+3	1433	1707848522093292947	CMakeFiles/Change_Calc.dir/utility/paths.cpp.o	74265298212e74ab
+2	1648	1707848522306626266	CMakeFiles/Change_Calc.dir/utility/rand.cpp.o	7ed5bdb314f33972
+2	3537	1707848524196626137	CMakeFiles/Change_Calc.dir/third_party/fmt/src/format.cc.o	2f809b980f8ba050
+3537	3656	1707848524316626129	Change_Calc	fc6676bfaf27be5f
+3	1171	1707848676093282421	CMakeFiles/Change_Calc.dir/main.cpp.o	ac55a3bb786f2dfd
+1171	1288	1707848676209949079	Change_Calc	fc6676bfaf27be5f
+3	1182	1707848879889935158	CMakeFiles/Change_Calc.dir/main.cpp.o	ac55a3bb786f2dfd
+1182	1301	1707848880006601817	Change_Calc	fc6676bfaf27be5f
+3	1188	1707849249083243278	CMakeFiles/Change_Calc.dir/main.cpp.o	ac55a3bb786f2dfd
+1188	1310	1707849249203243270	Change_Calc	fc6676bfaf27be5f
+2	1178	1707850009273191392	CMakeFiles/Change_Calc.dir/main.cpp.o	ac55a3bb786f2dfd
+1178	1294	1707850009389858050	Change_Calc	fc6676bfaf27be5f
+2	1233	1707852352873031390	CMakeFiles/Change_Calc.dir/main.cpp.o	ac55a3bb786f2dfd
+1233	1361	1707852352999698047	Change_Calc	fc6676bfaf27be5f

@@ -1,0 +1,9 @@
+# ninja log v5
+4	172	1707848443223298332	CMakeFiles/C-Calc.dir/third_party/whereami.c.o	2face0cef9366cfa
+5630	5720	1707848448773297953	C-Calc	9394d7d17e349554
+3	649	1707848443703298299	CMakeFiles/C-Calc.dir/utility/array.cpp.o	7b7da6ec672d080e
+4	1327	1707848444379964920	CMakeFiles/C-Calc.dir/utility/paths.cpp.o	e2737fa22dc89616
+3	5630	1707848448683297959	CMakeFiles/C-Calc.dir/third_party/fmt/src/format.cc.o	5d30d01f7a6993b8
+2	1907	1707848444959964880	CMakeFiles/C-Calc.dir/main.cpp.o	5660e685bdd0892a
+2	2192	1707848445246631527	CMakeFiles/C-Calc.dir/utility/rand.cpp.o	317bed25ff6b856e
+4	2217	1707848445269964859	CMakeFiles/C-Calc.dir/third_party/sago/platform_folders.cpp.o	f5b75e1eaad021b4
