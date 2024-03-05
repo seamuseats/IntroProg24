@@ -7,6 +7,10 @@ string change(double money,double cost){
     int bills[4] = {0, 0, 0, 0};
     int coins[4] = {0, 0, 0, 0};
     //Array<int> x{1,2,3,4}; <-- initializes an array x with 4 values
+    //append (puts value on the end)
+    //insertAtIndex (puts value at index)
+    //removeAtIndex (removes value at index)
+    //
 
     
     while (change >= 20){

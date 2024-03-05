@@ -1,0 +1,9 @@
+# ninja log v5
+2	43	1709585196765937328	CMakeFiles/Yahtzee.dir/third_party/whereami.c.o	1cd372fccb45e2c1
+1	591	1709585197313921338	CMakeFiles/Yahtzee.dir/utility/rand.cpp.o	544aa35a80288fea
+1	543	1709585197265922737	CMakeFiles/Yahtzee.dir/utility/array.cpp.o	d1c21b458271738b
+1	713	1709585197433917836	CMakeFiles/Yahtzee.dir/third_party/sago/platform_folders.cpp.o	da7e4411cdd4a90c
+2	839	1709585197561914103	CMakeFiles/Yahtzee.dir/utility/paths.cpp.o	8e7591ce52f38d41
+1	1912	1709585198629882955	CMakeFiles/Yahtzee.dir/third_party/fmt/src/format.cc.o	b9c19ff5dfa03cc2
+1	798	1709587780823997314	CMakeFiles/Yahtzee.dir/main.cpp.o	20453d384b5340ee
+798	865	1709587780891997213	Yahtzee	d81d560b0b6d01b8

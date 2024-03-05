@@ -1,8 +1,0 @@
-/home/seamuseats/GitCloneIntroProg/IntroProg24/Change-Calc/build/CMakeFiles/Change_Calc.dir
-/home/seamuseats/GitCloneIntroProg/IntroProg24/Change-Calc/build/CMakeFiles/asset_dest_target.dir
-/home/seamuseats/GitCloneIntroProg/IntroProg24/Change-Calc/build/CMakeFiles/edit_cache.dir
-/home/seamuseats/GitCloneIntroProg/IntroProg24/Change-Calc/build/CMakeFiles/rebuild_cache.dir
-/home/seamuseats/GitCloneIntroProg/IntroProg24/Change-Calc/build/CMakeFiles/list_install_components.dir
-/home/seamuseats/GitCloneIntroProg/IntroProg24/Change-Calc/build/CMakeFiles/install.dir
-/home/seamuseats/GitCloneIntroProg/IntroProg24/Change-Calc/build/CMakeFiles/install/local.dir
-/home/seamuseats/GitCloneIntroProg/IntroProg24/Change-Calc/build/CMakeFiles/install/strip.dir
