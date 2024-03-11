@@ -5,5 +5,5 @@
 1	713	1709585197433917836	CMakeFiles/Yahtzee.dir/third_party/sago/platform_folders.cpp.o	da7e4411cdd4a90c
 2	839	1709585197561914103	CMakeFiles/Yahtzee.dir/utility/paths.cpp.o	8e7591ce52f38d41
 1	1912	1709585198629882955	CMakeFiles/Yahtzee.dir/third_party/fmt/src/format.cc.o	b9c19ff5dfa03cc2
-1	798	1709587780823997314	CMakeFiles/Yahtzee.dir/main.cpp.o	20453d384b5340ee
-798	865	1709587780891997213	Yahtzee	d81d560b0b6d01b8
+1	1090	1709925619678263865	CMakeFiles/Yahtzee.dir/main.cpp.o	20453d384b5340ee
+1090	1157	1709925619746263019	Yahtzee	d81d560b0b6d01b8
