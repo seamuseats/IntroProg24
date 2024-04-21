@@ -52,6 +52,10 @@ set(INCLUDE_GTEST FALSE)
 
 add_executable(${PROJECT_NAME} ${ADD_EX_EXTRA}
     # Hey!  Add additional c, cpp, h files here:
+    ship.cpp
+    ship.h
+    asteroid.cpp
+    asteroid.h
 )
 
 # STUDENTS:  Probably don't mess with anything below this point
