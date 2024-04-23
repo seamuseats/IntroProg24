@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
     P1.accel = {0, 0};
     int num = 0;
     Vec2d vCopy = {P1.velocity};
+    int WAIT{0};
     Array<Bullet> sceneProjectiles;
     while(john.size() < 10){
         john.append(Asteroid({randomInt(0, g.width()), randomInt(0, g.height())}, {randomDouble(-1, 1), randomInt(-1, 1)}, {0, 0}, 25));
@@ -61,45 +62,48 @@ int main(int argc, char *argv[])
         num ++;
         Vec2d centre{g.width() / 2, g.height() / 2};
         //P1.rot = 1 / sin((centre.y - P1.pos.y));
-        if (g.isKeyPressed(Key::Space)){
-            sceneProjectiles.append(Bullet(P1.pos, P1.velocity, P1.rot));
+        g.rect({0, 0}, (WAIT / (0.0009 * (g.width() * (1 / float(WAIT))))), 10, RED, GREEN);
+        if (g.isKeyPressed(Key::Space) && WAIT < 0){
+            sceneProjectiles.append(Bullet(P1.pos, P1.velocity, P1.rot, 300));
+            WAIT = 30;
             //for the funy
             #ifdef linux
             system("cat ./trollface.txt");
             #endif 
+            #ifdef APPLE
+            system("cat ./trollface.txt");
+            #endif
             #ifdef _WIN32
             system("type ./trollface.txt");
             #endif
+        }
+
+        while(num % 500 == 0 && john.size() < 10){
+            john.append(Asteroid({randomInt(0, g.width()), randomInt(0, g.height())}, {randomDouble(-1, 1), randomInt(-1, 1)}, {0, 0}, 25));
         }
         
         for (int i = 0; i < john.size(); i++){
             wrapper(g, john[i].pos);
             john[i].draw(g);
         }
-        while(sceneProjectiles.size() > 0){
-            for (int i = 0; i < (sceneProjectiles.size() - 1); i++){
-                sceneProjectiles[i].draw(g);
-                for(int a = 0; a < john.size(); a++){
-                    if(sceneProjectiles[i].checkCollision(john[a].pos)){
-                        john.removeAtIndex(a);
-                    }
+        //while(sceneProjectiles.size() > 0){
+        for (int i = 0; i < (sceneProjectiles.size()); i++){
+            sceneProjectiles[i].life--;
+            sceneProjectiles[i].draw(g);
+            for(int a = 0; a < john.size(); a++){
+                if(sceneProjectiles[i].checkCollision(john[a].pos)){
+                    john.removeAtIndex(a);
                 }
-                //collectPls(sceneProjectiles, i, g);
-                
-                // if(sceneProjectiles[i].pos.x >= (g.width() && (i < sceneProjectiles.size()))){
-                //     sceneProjectiles.removeAtIndex(i);
-                // }
-                // if(sceneProjectiles[i].pos.y >= (g.height() && (i < sceneProjectiles.size()))){
-                //     sceneProjectiles.removeAtIndex(i);
-                // }
-                // if(sceneProjectiles[i].pos.x <= 0 && (i < sceneProjectiles.size())){
-                //     sceneProjectiles.removeAtIndex(i);
-                // }
-                // if(sceneProjectiles[i].pos.y <= 0 && (i < sceneProjectiles.size())){
-                //     sceneProjectiles.removeAtIndex(i);
-                // }
+            }
+            //collectPls(sceneProjectiles, i, g);
+            
+            
+            wrapper(g, sceneProjectiles[i].pos);
+            if(sceneProjectiles[i].life < 0){
+                sceneProjectiles.removeAtIndex(i);
             }
         }
+        //}
 
         if (g.isKeyPressed(Key::Left)){
             P1.rot -= 0.05;
@@ -115,6 +119,7 @@ int main(int argc, char *argv[])
             P1.accel *= 0.999;
         }
         P1.velocity *= 0.999;
+        WAIT--;
         // if(P1.velocity.y >= 3){
         //     P1.velocity.y = 5;
         // }

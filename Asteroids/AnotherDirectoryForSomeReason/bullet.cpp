@@ -12,7 +12,9 @@ bool Bullet::checkCollision(Vec2d obj){
 }
 
 void Bullet::draw(Graphics& g){
-    g.ellipse(pos, 20, 20, GREY, GREY);
-    Vec2d velocity2 = Vec2d{0, 4}.rotated(rot + (M_PI / 2)) + velocity;
-    pos += velocity2;
+    if(life > 0){
+        g.ellipse(pos, 20, 20, GREY, GREY);
+        Vec2d velocity2 = Vec2d{0, 4}.rotated(rot + (M_PI / 2)) + velocity;
+        pos += velocity2;
+    }
 }
