@@ -1,5 +1,4 @@
-#ifndef ARRAY_H
-#define ARRAY_H
+#pragma once
 
 // although ArrayBase is basically a vector<>, I'm calling it Array to minimize confusion with
 // the mathematical concept of a vector, which we use when doing graphics programming
@@ -436,5 +435,3 @@ struct fmt::formatter<Array<T>> : fmt::formatter<T> {
         return fmt::format_to(out, "}}");
     }
 };
-
-#endif // ARRAY_H

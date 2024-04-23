@@ -1,5 +1,4 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#pragma once
 
 #include "graphics.h"
 #include "openpnp-capture.h"
@@ -52,4 +51,3 @@ public:
     mssm::Image capture();
 };
 
-#endif // CAMERA_H

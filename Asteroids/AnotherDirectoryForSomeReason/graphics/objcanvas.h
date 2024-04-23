@@ -1,5 +1,4 @@
-#ifndef OBJCANVAS_H
-#define OBJCANVAS_H
+#pragma once
 
 #include "graphics.h"
 
@@ -45,5 +44,3 @@ namespace mssm {
         virtual void imageC(Vec2d center, double angle, double w, double h, const Image &img, Vec2d src, int srcw, int srch) override;
     };
 }
-
-#endif // OBJCANVAS_H

@@ -1,5 +1,4 @@
-#ifndef PATHS_H
-#define PATHS_H
+#pragma once
 
 #include <string>
 
@@ -11,4 +10,3 @@ public:
     static std::string documentsFolder();
 };
 
-#endif // PATHS_H

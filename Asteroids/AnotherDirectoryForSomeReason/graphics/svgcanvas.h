@@ -1,6 +1,4 @@
-#ifndef SVGCANVAS_H
-#define SVGCANVAS_H
-
+#pragma once
 #include "graphics.h"
 #include <fstream>
 
@@ -51,5 +49,3 @@ public:
 
 };
 }
-
-#endif // SVGCANVAS_H

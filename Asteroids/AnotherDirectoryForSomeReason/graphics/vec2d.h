@@ -1,6 +1,4 @@
-#ifndef VEC2D_H
-#define VEC2D_H
-
+#pragma once
 #include <cstdint>
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -151,5 +149,3 @@ template <typename T>
 auto format_value(const Vec2base<T>& v, auto i) {
     return fmt::format_to(i, "{{{}, {}}}", v.x, v.y);
 }
-
-#endif // VEC2D_H

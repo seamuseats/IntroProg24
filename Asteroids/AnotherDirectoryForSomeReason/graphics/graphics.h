@@ -1,5 +1,4 @@
-#ifndef GROBS_H
-#define GROBS_H
+#pragma once
 
 // #define _USE_MATH_DEFINES
 // #include <cmath>
@@ -729,6 +728,3 @@ auto format_value(const Color& c, auto i) {
 
 }
 
-
-
-#endif // GROBS_H

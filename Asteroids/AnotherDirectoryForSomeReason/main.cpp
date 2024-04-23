@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     P1.accel = {0, 0};
     int num = 0;
     Vec2d vCopy = {P1.velocity};
-    int WAIT{0};
+    int coolDown{0};
     Array<Bullet> sceneProjectiles;
     while(john.size() < 10){
         john.append(Asteroid({randomInt(0, g.width()), randomInt(0, g.height())}, {randomDouble(-1, 1), randomInt(-1, 1)}, {0, 0}, 25));
@@ -62,10 +62,10 @@ int main(int argc, char *argv[])
         num ++;
         Vec2d centre{g.width() / 2, g.height() / 2};
         //P1.rot = 1 / sin((centre.y - P1.pos.y));
-        g.rect({0, 0}, 1 / ((g.width() / 30) * WAIT), 10, RED, GREEN);
-        if (g.isKeyPressed(Key::Space) && WAIT < 0){
+        g.rect({0, 0}, (1 / (coolDown / 30)) * g.width(), 10, RED, GREEN);
+        if (g.isKeyPressed(Key::Space) && coolDown < 0){
             sceneProjectiles.append(Bullet(P1.pos, P1.velocity, P1.rot, 300));
-            WAIT = 30;
+            coolDown = 30;
             //for the funy
             #ifdef linux
             system("cat ./trollface.txt");
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
             P1.accel *= 0.999;
         }
         P1.velocity *= 0.999;
-        WAIT--;
+        coolDown--;
         // if(P1.velocity.y >= 3){
         //     P1.velocity.y = 5;
         // }
