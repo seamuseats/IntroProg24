@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
         num ++;
         Vec2d centre{g.width() / 2, g.height() / 2};
         //P1.rot = 1 / sin((centre.y - P1.pos.y));
-        g.rect({0, 0}, (WAIT / (0.0009 * (g.width() * (1 / float(WAIT))))), 10, RED, GREEN);
+        g.rect({0, 0}, 1 / ((g.width() / 30) * WAIT), 10, RED, GREEN);
         if (g.isKeyPressed(Key::Space) && WAIT < 0){
             sceneProjectiles.append(Bullet(P1.pos, P1.velocity, P1.rot, 300));
             WAIT = 30;
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
             system("cat ./trollface.txt");
             #endif
             #ifdef _WIN32
-            system("type ./trollface.txt");
+            system("type trollface.txt");
             #endif
         }
 
