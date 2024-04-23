@@ -5,6 +5,7 @@
 #include "ship.h"
 #include "asteroid.h"
 #include "bullet.h"
+#include "paths.h"
 
 using namespace std;
 using namespace mssm;
@@ -51,8 +52,9 @@ int main(int argc, char *argv[])
     P1.accel = {0, 0};
     int num = 0;
     Vec2d vCopy = {P1.velocity};
-    int coolDown{0};
+    double coolDown{0};
     Array<Bullet> sceneProjectiles;
+    string trollPath = Paths::findAsset("trollface.txt");
     while(john.size() < 10){
         john.append(Asteroid({randomInt(0, g.width()), randomInt(0, g.height())}, {randomDouble(-1, 1), randomInt(-1, 1)}, {0, 0}, 25));
     }
@@ -62,13 +64,14 @@ int main(int argc, char *argv[])
         num ++;
         Vec2d centre{g.width() / 2, g.height() / 2};
         //P1.rot = 1 / sin((centre.y - P1.pos.y));
-        g.rect({0, 0}, (1 / (coolDown / 30)) * g.width(), 10, RED, GREEN);
+        g.rect({0, 0}, g.width() - ((float(coolDown) * g.width()) / 30), 10, RED, GREEN);
+        g.println("{}", coolDown);
         if (g.isKeyPressed(Key::Space) && coolDown < 0){
             sceneProjectiles.append(Bullet(P1.pos, P1.velocity, P1.rot, 300));
             coolDown = 30;
-            //for the funy
+            //for the funny
             #ifdef linux
-            system("cat ./trollface.txt");
+            system(fmt::format("cat {}", trollPath).c_str());
             #endif 
             #ifdef APPLE
             system("cat ./trollface.txt");
