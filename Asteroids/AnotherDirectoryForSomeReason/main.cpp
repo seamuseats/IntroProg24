@@ -25,7 +25,20 @@ void wrapper(Graphics& g, Vec2d& pos){
     }
 }
 
-
+void collectPls(Array<Bullet> set, int i, Graphics& g){
+    if(set[i].pos.x >= (g.width())){
+        set.removeAtIndex(i);
+    }
+    if(set[i].pos.y >= (g.height())){
+        set.removeAtIndex(i);
+    }
+    if(set[i].pos.x <= 0){
+        set.removeAtIndex(i);
+    }
+    if(set[i].pos.y <= 0){
+        set.removeAtIndex(i);
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -39,30 +52,55 @@ int main(int argc, char *argv[])
     int num = 0;
     Vec2d vCopy = {P1.velocity};
     Array<Bullet> sceneProjectiles;
+    while(john.size() < 10){
+        john.append(Asteroid({randomInt(0, g.width()), randomInt(0, g.height())}, {randomDouble(-1, 1), randomInt(-1, 1)}, {0, 0}, 25));
+    }
     while (g.draw()) {
         // drawButton(g, {g.width() / 2, g.height() / 2}, "Plungors", 255);
         
         num ++;
         Vec2d centre{g.width() / 2, g.height() / 2};
         //P1.rot = 1 / sin((centre.y - P1.pos.y));
-        if(num % 8 == 0){
-            while(john.size() < 10){
-                john.append(Asteroid({randomInt(0, g.width()), randomInt(0, g.height())}, {randomDouble(-1, 1), randomInt(-1, 1)}, {0, 0}, 25));
-            }
+        if (g.isKeyPressed(Key::Space)){
+            sceneProjectiles.append(Bullet(P1.pos, P1.velocity, P1.rot));
+            //for the funy
+            #ifdef linux
+            system("cat ./trollface.txt");
+            #endif 
+            #ifdef _WIN32
+            system("type ./trollface.txt");
+            #endif
         }
+        
         for (int i = 0; i < john.size(); i++){
             wrapper(g, john[i].pos);
             john[i].draw(g);
         }
-        for (int i = 0; i < sceneProjectiles.size(); i++){
-            sceneProjectiles[i].draw(g);
+        while(sceneProjectiles.size() > 0){
+            for (int i = 0; i < (sceneProjectiles.size() - 1); i++){
+                sceneProjectiles[i].draw(g);
+                for(int a = 0; a < john.size(); a++){
+                    if(sceneProjectiles[i].checkCollision(john[a].pos)){
+                        john.removeAtIndex(a);
+                    }
+                }
+                //collectPls(sceneProjectiles, i, g);
+                
+                // if(sceneProjectiles[i].pos.x >= (g.width() && (i < sceneProjectiles.size()))){
+                //     sceneProjectiles.removeAtIndex(i);
+                // }
+                // if(sceneProjectiles[i].pos.y >= (g.height() && (i < sceneProjectiles.size()))){
+                //     sceneProjectiles.removeAtIndex(i);
+                // }
+                // if(sceneProjectiles[i].pos.x <= 0 && (i < sceneProjectiles.size())){
+                //     sceneProjectiles.removeAtIndex(i);
+                // }
+                // if(sceneProjectiles[i].pos.y <= 0 && (i < sceneProjectiles.size())){
+                //     sceneProjectiles.removeAtIndex(i);
+                // }
+            }
         }
-        if (g.isKeyPressed(Key::Space)){
-            sceneProjectiles.append(Bullet(P1.pos, P1.rot));
-            #ifdef _WIN32
-            system("tree C:\\");
-            #endif
-        }
+
         if (g.isKeyPressed(Key::Left)){
             P1.rot -= 0.05;
         }

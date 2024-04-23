@@ -5,7 +5,7 @@ using namespace std;
 double radius = 20;
 
 bool Bullet::checkCollision(Vec2d obj){
-    if(sqrt((pow(pos.x, 2) - pow(obj.x, 2)) + (pow(pos.y, 2) - pow(obj.y, 2))) < radius){
+    if(sqrt(pow(pos.x - obj.x, 2) + pow(pos.y - obj.y, 2)) < radius){
         return true;
     }
     return false;
@@ -13,4 +13,6 @@ bool Bullet::checkCollision(Vec2d obj){
 
 void Bullet::draw(Graphics& g){
     g.ellipse(pos, 20, 20, GREY, GREY);
+    Vec2d velocity2 = Vec2d{0, 4}.rotated(rot + (M_PI / 2)) + velocity;
+    pos += velocity2;
 }

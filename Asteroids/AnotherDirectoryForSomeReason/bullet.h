@@ -7,6 +7,7 @@ using namespace mssm;
 class Bullet{
     public:
     Vec2d pos;
+    Vec2d velocity;
     double rot;
     bool checkCollision(Vec2d obj);
     void draw(Graphics& g);

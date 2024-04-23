@@ -1,5 +1,4 @@
-#ifndef SHIP_H
-#define SHIP_H
+#pragma once
 #include "vec2d.h"
 #include "graphics.h"
 #include "math.h"
@@ -15,5 +14,3 @@ class Ship{
     int size{25};
     void draw(Graphics& g);
 };
-
-#endif // SHIP_H
