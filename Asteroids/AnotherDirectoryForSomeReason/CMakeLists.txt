@@ -52,6 +52,8 @@ set(INCLUDE_GTEST FALSE)
 
 add_executable(${PROJECT_NAME} ${ADD_EX_EXTRA}
     # Hey!  Add additional c, cpp, h files here:
+    bullet.h
+    bullet.cpp
     ship.cpp
     ship.h
     asteroid.cpp

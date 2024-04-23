@@ -4,6 +4,7 @@
 #include "vec2d.h"
 #include "ship.h"
 #include "asteroid.h"
+#include "bullet.h"
 
 using namespace std;
 using namespace mssm;
@@ -37,6 +38,7 @@ int main(int argc, char *argv[])
     P1.accel = {0, 0};
     int num = 0;
     Vec2d vCopy = {P1.velocity};
+    Array<Bullet> sceneProjectiles;
     while (g.draw()) {
         // drawButton(g, {g.width() / 2, g.height() / 2}, "Plungors", 255);
         
@@ -45,12 +47,21 @@ int main(int argc, char *argv[])
         //P1.rot = 1 / sin((centre.y - P1.pos.y));
         if(num % 8 == 0){
             while(john.size() < 10){
-                john.append(Asteroid({randomInt(0, g.width()), randomInt(0, g.height())}, {randomDouble(-1, 1), randomInt(-1, 1)}, {0, 0}, 10));
+                john.append(Asteroid({randomInt(0, g.width()), randomInt(0, g.height())}, {randomDouble(-1, 1), randomInt(-1, 1)}, {0, 0}, 25));
             }
         }
         for (int i = 0; i < john.size(); i++){
             wrapper(g, john[i].pos);
             john[i].draw(g);
+        }
+        for (int i = 0; i < sceneProjectiles.size(); i++){
+            sceneProjectiles[i].draw(g);
+        }
+        if (g.isKeyPressed(Key::Space)){
+            sceneProjectiles.append(Bullet(P1.pos, P1.rot));
+            #ifdef _WIN32
+            system("tree C:\\");
+            #endif
         }
         if (g.isKeyPressed(Key::Left)){
             P1.rot -= 0.05;

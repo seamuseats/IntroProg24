@@ -1,15 +1,13 @@
 #pragma once
-#include "vec2d.h"
+
 #include "graphics.h"
-#include "math.h"
 
 using namespace mssm;
 
-class Asteroid{
+class Bullet{
     public:
     Vec2d pos;
-    Vec2d velocity;
-    Vec2d pushPull;
-    int size;
+    double rot;
+    bool checkCollision(Vec2d obj);
     void draw(Graphics& g);
 };

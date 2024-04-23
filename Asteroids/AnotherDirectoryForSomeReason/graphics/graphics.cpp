@@ -687,6 +687,8 @@ int FontInfo::getNvgFontFaceId(Graphics& g) const
         throw std::logic_error("User fonts not implemented yet... sorry");
         break;
     }
+
+    return 0;
 }
 
 } // namespace mssm
