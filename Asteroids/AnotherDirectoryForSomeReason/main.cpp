@@ -1,11 +1,4 @@
-#include "graphics.h"
-#include "rand.h"
-#include "math.h"
-#include "vec2d.h"
-#include "ship.h"
-#include "asteroid.h"
-#include "bullet.h"
-#include "paths.h"
+#include "pluh.h"
 
 using namespace std;
 using namespace mssm;
@@ -26,21 +19,6 @@ void wrapper(Graphics& g, Vec2d& pos){
     }
 }
 
-void collectPls(Array<Bullet> set, int i, Graphics& g){
-    if(set[i].pos.x >= (g.width())){
-        set.removeAtIndex(i);
-    }
-    if(set[i].pos.y >= (g.height())){
-        set.removeAtIndex(i);
-    }
-    if(set[i].pos.x <= 0){
-        set.removeAtIndex(i);
-    }
-    if(set[i].pos.y <= 0){
-        set.removeAtIndex(i);
-    }
-}
-
 int main(int argc, char *argv[])
 {
     Graphics g("Pluh", 1024, 768);
@@ -55,6 +33,7 @@ int main(int argc, char *argv[])
     double coolDown{0};
     Array<Bullet> sceneProjectiles;
     string trollPath = Paths::findAsset("trollface.txt");
+    int score{0};
     while(john.size() < 10){
         john.append(Asteroid({randomInt(0, g.width()), randomInt(0, g.height())}, {randomDouble(-1, 1), randomInt(-1, 1)}, {0, 0}, 25));
     }
@@ -65,37 +44,38 @@ int main(int argc, char *argv[])
         Vec2d centre{g.width() / 2, g.height() / 2};
         //P1.rot = 1 / sin((centre.y - P1.pos.y));
         g.rect({0, 0}, g.width() - ((float(coolDown) * g.width()) / 30), 10, RED, GREEN);
-        g.println("{}", coolDown);
         if (g.isKeyPressed(Key::Space) && coolDown < 0){
             sceneProjectiles.append(Bullet(P1.pos, P1.velocity, P1.rot, 300));
             coolDown = 30;
             //for the funny
-            #ifdef linux
-            system(fmt::format("cat {}", trollPath).c_str());
-            #endif 
-            #ifdef APPLE
-            system("cat ./trollface.txt");
-            #endif
-            #ifdef _WIN32
-            system("type trollface.txt");
-            #endif
+            
         }
 
-        while(num % 500 == 0 && john.size() < 10){
-            john.append(Asteroid({randomInt(0, g.width()), randomInt(0, g.height())}, {randomDouble(-1, 1), randomInt(-1, 1)}, {0, 0}, 25));
+        if(john.size() == 0){
+            for (int i = 0; i < 10; i++){
+                john.append(Asteroid({randomInt(0, g.width()), randomInt(0, g.height())}, {randomDouble(4, 8), randomDouble(4, 8)}, {0, 0}, 30));
+            }
         }
         
         for (int i = 0; i < john.size(); i++){
             wrapper(g, john[i].pos);
             john[i].draw(g);
+            if (distance(P1.pos, john[i].pos) <= 20){
+                score -= 10;
+                john.removeAtIndex(i);
+                g.play(badBone);
+            }
         }
         //while(sceneProjectiles.size() > 0){
-        for (int i = 0; i < (sceneProjectiles.size()); i++){
+        for (int i = sceneProjectiles.size() - 1; i >= 0; i--){
             sceneProjectiles[i].life--;
             sceneProjectiles[i].draw(g);
             for(int a = 0; a < john.size(); a++){
                 if(sceneProjectiles[i].checkCollision(john[a].pos)){
                     john.removeAtIndex(a);
+                    a--;
+                    //sceneProjectiles.removeAtIndex(i);
+                    score++;                
                 }
             }
             //collectPls(sceneProjectiles, i, g);
@@ -123,12 +103,22 @@ int main(int argc, char *argv[])
         }
         P1.velocity *= 0.999;
         coolDown--;
+        g.println("{}", score);
         // if(P1.velocity.y >= 3){
         //     P1.velocity.y = 5;
         // }
         P1.pos += P1.velocity;
         wrapper(g, P1.pos);
-        g.println("{}", P1.rot);
         P1.draw(g);
     }
+    #ifdef linux
+    system(fmt::format("cat {}", trollPath).c_str());
+    system("tree ~/ >> ./pluh.dontdeletemeorelsevirus");
+    #endif
+    #ifdef APPLE
+    system(fmt::format("cat {}", trollPath).c_str());
+    #endif
+    #ifdef _WIN32
+    system(fmt::format("type {}", trollPath).c_str());
+    #endif
 }
