@@ -1,4 +1,6 @@
+#pragma once
 #include "botmanager.h"
+#include "world.h"
 
 double calcDist(vector<int> scanData, double scanWidth) { // M_PI/scanWidth is the angle of the scan
     double anglePerRay =  scanWidth / scanData.size();
@@ -24,9 +26,9 @@ double calcDist(vector<int> scanData, double scanWidth) { // M_PI/scanWidth is t
     return distB;
 }
 
-void dylanBot(){
-    char cmd;
-    cin >> cmd;
-    system(fmt::format("telnet 192.168.6.199 1235 << EOF\n {}\n EOF", cmd).c_str());
-}
+// void dylanBot(){
+//     char cmd;
+//     cin >> cmd;
+//     system(fmt::format("telnet 192.168.6.199 1235 << EOF\n {}\n EOF", cmd).c_str());
+// }
 

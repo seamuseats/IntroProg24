@@ -65,6 +65,8 @@ add_executable(${PROJECT_NAME} ${ADD_EX_EXTRA}
     botbattle/botai.h
     botbattle/botcmd.cpp
     dylanTools.h
+    world.cpp
+    world.h
 )
 
 # STUDENTS:  Probably don't mess with anything below this point

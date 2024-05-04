@@ -1,4 +1,5 @@
 #include "botmanager.h"
+#include "dylanTools.h"
 
 using namespace mssm;
 using namespace std;
@@ -6,6 +7,18 @@ using namespace std;
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma GCC diagnostic ignored "-Wnarrowing"
+
+double netRot;
+double netDist;
+Vec2d Pos;
+double grinch;
+Array<Vec2d> wallPoints;
+World world;
+
+int a;
+
+bool justScannedBot;
+bool gonnaHitWall;
 
 /*
  *
@@ -56,7 +69,7 @@ public:
     virtual BotCmd handleEvents( BotEvent& event);
     virtual void logEvent(std::string event);
     virtual void logCommand(std::string command);
-    void draw() override;
+    void draw() override;   
 };
 
 void MyBotAI::draw()
@@ -66,6 +79,21 @@ void MyBotAI::draw()
     }
     for (auto& msg : messageLog) {
         g.println("{}", msg);
+        Vec2d centre = Vec2d(g.width() / 2, g.height() / 2);
+	    g.ellipse((Pos + Vec2d{g.width() / 2, g.height() / 2}), 40, 40, WHITE, WHITE);
+        if(justScannedBot == true && grinch > 1){
+            g.ellipse((Pos + Vec2d{g.width() / 2, g.height() / 2} + Vec2d{grinch, 0}.rotated(netRot)), 40, 40, RED, RED);
+            
+        }
+        if(wallPoints.size() >= 2 /*&& wallPoints.size() % 2 == 0*/){
+            for(int i = 0; i < wallPoints.size(); i++){
+                // if(i % 2 == 0){
+                //     g.line(wallPoints[i] + Vec2d{g.width() / 2, g.height() / 2}, wallPoints[i] + Vec2d{g.width() / 2, g.height() / 2}, GREEN);
+                //g.ellipse(wallPoints[i] + Vec2d{g.width() / 2, g.height() / 2}, 10, 10, GREEN);
+                // }
+                
+            }
+        }
     }
 
 }
@@ -75,10 +103,10 @@ MyBotAI::MyBotAI(Graphics& g, string name) : g{g}
     setName(name);
 }
 
+
 BotCmd MyBotAI::handleEvents(BotEvent& event)
 {
     // This is where you'll implement your bot "AI"
-
     switch (event.eventType)
     {
     case BotEventType::TurnComplete:      // Finished turning
@@ -89,7 +117,16 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // N/A
         // event.angleTurned;     // valid for this event;
         // event.scanData;        // N/A
-        return MoveForward(5);
+        a++;
+        //system("./scitp.sh");
+        netRot += event.angleTurned;
+        justScannedBot = false;
+        if(justScannedBot == true && event.energy > 0){
+            return Fire();
+        }
+        else{
+            return MoveForward(0.01);
+        }
     case BotEventType::MoveComplete:      // Finished moving
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -98,7 +135,21 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // valid for this event;
         // event.angleTurned;     // N/A
         // event.scanData;        // N/A
-        return MoveForward(5);
+        netDist += event.travelDistance;
+        Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
+        if(event.health <= 3 && event.energy >= 3){
+            return BotAI::Heal();
+        }
+        else if(justScannedBot == true && event.energy >= 3){
+            return BotAI::Fire();
+        }
+        else if(a % 2 == 0){
+            return MoveForward(0.01);
+            a++;
+        }
+        else{
+            return Scan(0.9);
+        }
     case BotEventType::MoveBlockedByBot:  // you ran into a bot
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -107,7 +158,10 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // valid for this event;
         // event.angleTurned;     // N/A
         // event.scanData;        // N/A
-        return Turn(M_PI-event.collisionAngle);
+        netDist += event.travelDistance;
+        Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
+        a++;
+        return Turn(M_PI + randomDouble(-0.1, 0.1));
     case BotEventType::MoveBlockedByWall: // you ran into a wall
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -115,15 +169,14 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.collisionAngle;  // valid for this event;
         // event.travelDistance;  // valid for this event;
         // event.angleTurned;     // N/A
-        // event.scanData;        // N/A       
-        if (event.collisionAngle > 0) {
-            double adjust = 1;
-            return Turn(-M_PI+event.collisionAngle+adjust);
+        // event.scanData;        // N/A
+        netDist += event.travelDistance;
+        Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
+        world.wallPoints.append(Vec2d(Pos));
+        if(event.collisionAngle <= 0.1 && event.collisionAngle >= -0.1){
+            return Turn(event.collisionAngle + M_PI);
         }
-        else {
-            double adjust = 1;
-            return Turn(M_PI+event.collisionAngle-adjust);
-        }
+        return Turn(event.collisionAngle + (M_PI / 2));
     case BotEventType::FireComplete:   // bullet launched
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -132,7 +185,8 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // N/A
         // event.angleTurned;     // N/A
         // event.scanData;        // N/A
-        return MoveForward(1);
+        //system("ping 192.168.6.199");
+        return Scan(0.9);
     case BotEventType::NoEnergy:       // Last command failed due to lack of energy
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -141,7 +195,9 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // N/A
         // event.angleTurned;     // N/A
         // event.scanData;        // N/A
-        return MoveForward(1);
+        //return BotAI::Resign();
+        setName("AHHHHH");
+        return BotAI::Scan(0.9);
     case BotEventType::BlockComplete:  // Finished blocking
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -150,7 +206,7 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // N/A
         // event.angleTurned;     // N/A
         // event.scanData;        // N/A
-        return MoveForward(1);
+        return Turn(1);
     case BotEventType::HealComplete:   // Finished healing
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -159,7 +215,7 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // N/A
         // event.angleTurned;     // N/A
         // event.scanData;        // N/A
-        return MoveForward(1);
+        return Scan(0.9);
     case BotEventType::ScanComplete:   // Finished scanning
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -167,8 +223,19 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.collisionAngle;  // N/A
         // event.travelDistance;  // N/A
         // event.angleTurned;     // N/A
-        // event.scanData;        // valid for this event
+        {
+        grinch = calcDist(event.scanData, 0.9); //distance from me to nearest bot
+        a++;
+        for(int i = 0; i < event.scanData.size(); i++){
+            double increment{0.9 / event.scanData.size()};
+            if(event.scanData[i] > 0){
+                justScannedBot = true;
+                return Turn(0.45 - (increment * i));
+            }
+            justScannedBot = false;
+        }
         return MoveForward(1);
+        }
 
         // the following events may be ignored if you choose
     case BotEventType::ShotSelf:       // Your own bullet hit you
@@ -179,7 +246,10 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // valid for this event
         // event.angleTurned;     // valid for this event
         // event.scanData;        // N/A
-        return Ignore();
+        netDist += event.travelDistance;
+        netRot += event.angleTurned;
+        Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
+        return MoveForward(event.health);
     case BotEventType::BulletHitBot:   // Your bullet hit another bot
         // event.eventTime;       // valid for this event
         // event.health;          // OTHER bot's health
@@ -188,7 +258,7 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // N/A
         // event.angleTurned;     // N/A
         // event.scanData;        // N/A
-        return Ignore();
+        return Fire();
     case BotEventType::HitByBot:       // A bot collided with you
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -197,7 +267,17 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // valid for this event
         // event.angleTurned;     // valid for this event
         // event.scanData;        // N/A
-        return Ignore();
+
+        netRot += event.angleTurned;
+        netDist += event.travelDistance;
+        setName("SKDGHNLSKDJGNLSDJIGN");
+        Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
+        if(event.health < 3){
+            return Fire();
+        }
+        else{
+            return Scan(0.9);
+        }
     case BotEventType::HitByBullet:    // A bullet hit you
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -206,8 +286,11 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // valid for this event
         // event.angleTurned;     // valid for this event
         // event.scanData;        // N/A
-        return Ignore();
-    case BotEventType::PowerUp:        // you ran over an energy pellet
+        netDist += event.travelDistance;
+        netRot += event.angleTurned;
+        Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
+        return MoveForward(event.health);
+        case BotEventType::PowerUp:        // you ran over an energy pellet
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
         // event.energy;          // valid for this event
@@ -215,6 +298,9 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // valid for this event
         // event.angleTurned;     // valid for this event
         // event.scanData;        // N/A
+        netRot += event.angleTurned;
+        netDist += event.travelDistance;
+        Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
         return Ignore();
     }
 
@@ -236,9 +322,9 @@ void MyBotAI::logCommand(std::string command)
 
 void botBrainLoop(Graphics& g)
 {
-    BotManager botManager(1235, "localhost"); // "192.168.6.199");
+    BotManager botManager(1235, "192.168.6.199"); // "192.168.6.199");
 
-    botManager.setBot(std::make_unique<MyBotAI>(g, "Bouncer"));
+    botManager.setBot(std::make_unique<MyBotAI>(g, "Pluh"));
 
     while (g.draw() && !botManager.isDead())
     {
@@ -262,7 +348,9 @@ void prompt(Graphics& g, string msg)
 
 int main()
 {
-    Graphics g("Bot Battle Client", 1000, 800);
+    Graphics g("Bot Battle Client", 3000, 2000);
+
+    
 
     try {
         while (g.draw()) {
