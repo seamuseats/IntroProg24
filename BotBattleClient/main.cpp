@@ -18,7 +18,8 @@ World world;
 int a;
 
 bool justScannedBot;
-bool gonnaHitWall;
+bool inMiddle;
+bool hitWall;
 
 /*
  *
@@ -81,19 +82,10 @@ void MyBotAI::draw()
         g.println("{}", msg);
         Vec2d centre = Vec2d(g.width() / 2, g.height() / 2);
 	    g.ellipse((Pos + Vec2d{g.width() / 2, g.height() / 2}), 40, 40, WHITE, WHITE);
-        if(justScannedBot == true && grinch > 1){
-            g.ellipse((Pos + Vec2d{g.width() / 2, g.height() / 2} + Vec2d{grinch, 0}.rotated(netRot)), 40, 40, RED, RED);
-            
-        }
-        if(wallPoints.size() >= 2 /*&& wallPoints.size() % 2 == 0*/){
-            for(int i = 0; i < wallPoints.size(); i++){
-                // if(i % 2 == 0){
-                //     g.line(wallPoints[i] + Vec2d{g.width() / 2, g.height() / 2}, wallPoints[i] + Vec2d{g.width() / 2, g.height() / 2}, GREEN);
-                //g.ellipse(wallPoints[i] + Vec2d{g.width() / 2, g.height() / 2}, 10, 10, GREEN);
-                // }
-                
-            }
-        }
+        // if(justScannedBot == true && grinch > 1){
+        //     g.ellipse((Pos + Vec2d{g.width() / 2, g.height() / 2} + Vec2d{grinch, 0}.rotated(netRot)), 40, 40, RED, RED);
+        // }
+        world.draw(g);
     }
 
 }
@@ -120,12 +112,16 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         a++;
         //system("./scitp.sh");
         netRot += event.angleTurned;
-        justScannedBot = false;
         if(justScannedBot == true && event.energy > 0){
             return Fire();
+            justScannedBot = false;
+        }
+        else if(hitWall == true){
+            return MoveForward(1.6 * randomDouble(0.9, 1.1));
+            hitWall = false;
         }
         else{
-            return MoveForward(0.01);
+            return MoveBackward(1);
         }
     case BotEventType::MoveComplete:      // Finished moving
         // event.eventTime;       // valid for this event
@@ -143,9 +139,8 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         else if(justScannedBot == true && event.energy >= 3){
             return BotAI::Fire();
         }
-        else if(a % 2 == 0){
-            return MoveForward(0.01);
-            a++;
+        else if(hitWall == true){
+            return Turn(M_PI * 0.5);
         }
         else{
             return Scan(0.9);
@@ -170,13 +165,22 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // valid for this event;
         // event.angleTurned;     // N/A
         // event.scanData;        // N/A
+
         netDist += event.travelDistance;
         Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
-        world.wallPoints.append(Vec2d(Pos));
+        world.wallPoints.append(Vec2d(Pos) + Vec2d(20, 0).rotated(event.collisionAngle + netRot));
+        world.wallAngles.append(event.collisionAngle + netRot + (M_PI * 0.5));
+        hitWall = true;
         if(event.collisionAngle <= 0.1 && event.collisionAngle >= -0.1){
             return Turn(event.collisionAngle + M_PI);
         }
-        return Turn(event.collisionAngle + (M_PI / 2));
+        if(a % 2 == 0){
+            a++;
+            return Turn(event.collisionAngle + M_PI);
+        }
+        else{
+            return Turn(event.collisionAngle - M_PI);
+        }
     case BotEventType::FireComplete:   // bullet launched
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -356,6 +360,8 @@ int main()
         while (g.draw()) {
             botBrainLoop(g);
             prompt(g, "Disconnected: Press space to reconnect to server");
+            world.wallAngles.clear();
+            world.wallPoints.clear();
         }
     }
     catch (const std::exception& ex) {
