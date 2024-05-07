@@ -6,5 +6,6 @@ class World{
     public:
     Array<Vec2d> wallPoints;
     Array<double> wallAngles;
-    void draw(mssm::Graphics& g);
+    Array<Vec2d> GridCenters;
+    void draw(mssm::Graphics& g, Vec2d viewTransform);
 };

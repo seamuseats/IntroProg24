@@ -10,10 +10,13 @@ using namespace std;
 
 double netRot;
 double netDist;
+bool starting{true};
 Vec2d Pos;
 double grinch;
 Array<Vec2d> wallPoints;
 World world;
+bool aligned{false};
+Vec2d viewTransform;
 
 int a;
 
@@ -81,12 +84,23 @@ void MyBotAI::draw()
     }
     for (auto& msg : messageLog) {
         g.println("{}", msg);
-        Vec2d centre = Vec2d(g.width() / 2, g.height() / 2);
-	    g.ellipse((Pos + Vec2d{g.width() / 2, g.height() / 2}), 40, 40, WHITE, WHITE);
-        if(justScannedBot == true && grinch > 1){
-            g.ellipse((Pos + Vec2d{g.width() / 2, g.height() / 2} + Vec2d{grinch, 0}.rotated(netRot)), 40, 40, RED, RED);
+	    g.ellipse((Pos + viewTransform), 40, 40, WHITE, WHITE);
+        if(g.isKeyPressed('w')){
+            viewTransform.y -= 1;
         }
-        world.draw(g);
+        if(g.isKeyPressed('a')){
+            viewTransform.x -= 1;
+        }
+        if(g.isKeyPressed('s')){
+            viewTransform.y += 1;
+        }
+        if(g.isKeyPressed('d')){
+            viewTransform.x += 1;
+        }
+        for (int i = 0; i < world.GridCenters.size(); i++){
+            g.ellipse(world.GridCenters[i] + viewTransform, 100, 100, TPGREEN, TPGREEN);
+        }
+        world.draw(g, viewTransform);
     }
 
 }
@@ -112,16 +126,25 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.scanData;        // N/A
         a++;
         //system("./scitp.sh");
-        netRot += event.angleTurned;
+        if(starting){
+            netRot = 0;
+            starting = false;
+        }
+        else{
+            netRot += event.angleTurned;
+        }
         if(justScannedBot == true && event.energy > 0){
-            return Fire();
             justScannedBot = false;
+            return Fire();
         }
         else if(hitWall == true){
+            aligned = true;
+            justScannedBot = false;
             return MoveForward(1.6);
         }
         else{
-            return MoveBackward(0);
+            justScannedBot = false;
+            return MoveForward(0);
         }
     case BotEventType::MoveComplete:      // Finished moving
         // event.eventTime;       // valid for this event
@@ -133,14 +156,19 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.scanData;        // N/A
         netDist += event.travelDistance;
         Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
+        justScannedBot = false;
+        // if(event.travelDistance >= 199 && event.travelDistance <= 201 && aligned == true){
+        //     world.GridCenters.append(Pos);
+        // }
         if(event.health <= 3 && event.energy >= 3){
             return BotAI::Heal();
         }
         else if(justScannedBot == true && event.energy >= 3){
             return BotAI::Fire();
         }
-        else if(hitWall == true){
+        else if(hitWall == true && aligned == true){
             hitWall = false;
+            world.GridCenters.append(Pos);
             return Turn((M_PI * 0.5) * randomInt(-1, 1));
         }
         else{
@@ -166,14 +194,17 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.travelDistance;  // valid for this event;
         // event.angleTurned;     // N/A
         // event.scanData;        // N/A
+        
 
         netDist += event.travelDistance;
         Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
-        world.wallPoints.append(Vec2d(Pos) + Vec2d(20, 0).rotated(event.collisionAngle + netRot));
-        world.wallAngles.append(event.collisionAngle + netRot + (M_PI * 0.5));
+        if(aligned == true){
+            world.wallPoints.append(Vec2d(Pos) + Vec2d(20, 0).rotated(event.collisionAngle + netRot));
+            world.wallAngles.append(event.collisionAngle + netRot + (M_PI * 0.5));
+        }
         hitWall = true;
         if(event.collisionAngle <= 0.1 && event.collisionAngle >= -0.1){
-            return Turn(event.collisionAngle + M_PI);
+            return MoveForward(-1.6);
         }
         if(a % 2 == 0){
             a++;
@@ -236,7 +267,9 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
             double increment{0.9 / event.scanData.size()};
             if(event.scanData[i] > 0){
                 justScannedBot = true;
-                return Turn(0.45 - (increment * i) + (grinch / (event.scanData.size() - (event.scanData.size() / 2))));
+                BotAI::setName("I C U");
+                aligned = false;
+                return Turn(0.45 - (increment * i));
             }
             justScannedBot = false;
         }
@@ -279,7 +312,7 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         netDist += event.travelDistance;
         setName("SKDGHNLSKDJGNLSDJIGN");
         Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
-        return Resign();
+        return Scan(0.9);
     case BotEventType::HitByBullet:    // A bullet hit you
         // event.eventTime;       // valid for this event
         // event.health;          // valid for this event
@@ -351,13 +384,12 @@ void prompt(Graphics& g, string msg)
 int main()
 {
     Graphics g("Bot Battle Client", 3000, 2000);
-
+    viewTransform = Vec2d(g.width() / 2, g.height() / 2);
     
 
     try {
         while (g.draw()) {
             botBrainLoop(g);
-            prompt(g, "Disconnected: Press space to reconnect to server");
             world.wallAngles.clear();
             world.wallPoints.clear();
         }
