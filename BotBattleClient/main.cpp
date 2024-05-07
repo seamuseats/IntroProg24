@@ -1,5 +1,6 @@
 #include "botmanager.h"
 #include "dylanTools.h"
+#include <math.h>
 
 using namespace mssm;
 using namespace std;
@@ -17,6 +18,7 @@ Array<Vec2d> wallPoints;
 World world;
 bool aligned{false};
 Vec2d viewTransform;
+int mode{0};
 
 int a;
 
@@ -84,7 +86,6 @@ void MyBotAI::draw()
     }
     for (auto& msg : messageLog) {
         g.println("{}", msg);
-	    g.ellipse((Pos + viewTransform), 40, 40, WHITE, WHITE);
         if(g.isKeyPressed('w')){
             viewTransform.y -= 1;
         }
@@ -97,10 +98,20 @@ void MyBotAI::draw()
         if(g.isKeyPressed('d')){
             viewTransform.x += 1;
         }
-        for (int i = 0; i < world.GridCenters.size(); i++){
-            g.ellipse(world.GridCenters[i] + viewTransform, 100, 100, TPGREEN, TPGREEN);
+        if(g.isKeyPressed('m')){
+            mode = 1;
+        }
+        if(g.isKeyPressed('n')){
+            mode = 0;
         }
         world.draw(g, viewTransform);
+	    g.ellipse((Pos + viewTransform), 40, 40, WHITE, WHITE);
+        while(world.GridCenters.size() > 60){
+            world.GridCenters.removeAtIndex(0);
+        }
+        while(world.wallPoints.size() > 60){
+            world.wallPoints.removeAtIndex(0);
+        }
     }
 
 }
@@ -160,19 +171,44 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // if(event.travelDistance >= 199 && event.travelDistance <= 201 && aligned == true){
         //     world.GridCenters.append(Pos);
         // }
-        if(event.health <= 3 && event.energy >= 3){
-            return BotAI::Heal();
-        }
-        else if(justScannedBot == true && event.energy >= 3){
-            return BotAI::Fire();
-        }
-        else if(hitWall == true && aligned == true){
-            hitWall = false;
-            world.GridCenters.append(Pos);
-            return Turn((M_PI * 0.5) * randomInt(-1, 1));
-        }
-        else{
-            return Scan(0.9);
+        //world.clean();
+        switch(mode){
+        case(1):
+            if(event.health <= 3 && event.energy >= 3){
+                return BotAI::Heal();
+            }
+            else if(justScannedBot == true && event.energy >= 3){
+                return BotAI::Fire();
+            }
+            else if(hitWall == true && aligned == true){
+                hitWall = false;
+                world.GridCenters.append(Pos);
+                for(int i = 0; i < world.GridCenters.size(); i++){
+                    int cardinalDirection = randomInt(-1, 1);
+                    if(((Pos + Vec2d(200, 0).rotated(netRot + (M_PI * cardinalDirection))) - world.GridCenters[i]).magnitude() <= 0.1){
+                        return Turn(M_PI * cardinalDirection);
+                    }
+                }
+                return Turn((M_PI / 2) * randomInt(-1, 1));
+            }
+            else{
+                return Scan(0.9);
+            }
+        case(0):
+            if(event.health <= 3 && event.energy >= 3){
+                return BotAI::Heal();
+            }
+            else if(justScannedBot == true && event.energy >= 3){
+                return BotAI::Fire();
+            }
+            else if(hitWall == true && aligned == true){
+                hitWall = false;
+                world.GridCenters.append(Pos);
+                return Turn((M_PI / 2) * randomInt(-1, 1));
+            }
+            else{
+                return Scan(0.9);
+            }
         }
     case BotEventType::MoveBlockedByBot:  // you ran into a bot
         // event.eventTime;       // valid for this event
@@ -195,6 +231,7 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.angleTurned;     // N/A
         // event.scanData;        // N/A
         
+        
 
         netDist += event.travelDistance;
         Pos += Vec2d(event.travelDistance, 0).rotated(netRot);
@@ -203,7 +240,7 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
             world.wallAngles.append(event.collisionAngle + netRot + (M_PI * 0.5));
         }
         hitWall = true;
-        if(event.collisionAngle <= 0.1 && event.collisionAngle >= -0.1){
+        if(event.collisionAngle <= 0.01 && event.collisionAngle >= -0.01){
             return MoveForward(-1.6);
         }
         if(a % 2 == 0){
@@ -233,6 +270,7 @@ BotCmd MyBotAI::handleEvents(BotEvent& event)
         // event.scanData;        // N/A
         //return BotAI::Resign();
         setName("AHHHHH");
+        mode = 1;
         return BotAI::Scan(0.9);
     case BotEventType::BlockComplete:  // Finished blocking
         // event.eventTime;       // valid for this event
@@ -392,6 +430,7 @@ int main()
             botBrainLoop(g);
             world.wallAngles.clear();
             world.wallPoints.clear();
+            world.GridCenters.clear();
         }
     }
     catch (const std::exception& ex) {

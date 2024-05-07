@@ -8,4 +8,5 @@ class World{
     Array<double> wallAngles;
     Array<Vec2d> GridCenters;
     void draw(mssm::Graphics& g, Vec2d viewTransform);
+    void clean();
 };
